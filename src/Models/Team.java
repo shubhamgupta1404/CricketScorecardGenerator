@@ -9,7 +9,7 @@ public class Team {
 
     private int wickets;
 
-    private ArrayList<Player> players;
+    private ArrayList<Batsman> players;
 
     public Team(int playersCount) {
         this.playersCount = playersCount;
@@ -19,7 +19,7 @@ public class Team {
     }
 
     public void addPlayer(String playerName) {
-        Player p = new Batsman(playerName);
+        Batsman p = new Batsman(playerName);
         players.add(p);
     }
 
@@ -35,6 +35,10 @@ public class Team {
         return wickets == playersCount - 1;
     }
 
+    public void setIsPlaying(int playerId) {
+        players.get(playerId).setPlaying(true);
+    }
+
     @Override
     public String toString() {
         StringBuilder message = new StringBuilder();
@@ -44,8 +48,8 @@ public class Team {
         return message.toString();
     }
 
-    public void ballFaced(int player, int runs, int extra, boolean isLegalDelivery, boolean isWicket) {
-        players.get(player).ballFaced(runs, isLegalDelivery, isWicket);
+    public void ballFaced(int player, int runs, int extra, boolean isBoundary, boolean isLegalDelivery, boolean isWicket) {
+        players.get(player).ballFaced(runs, isBoundary, isLegalDelivery, isWicket);
         this.score += runs + extra;
         this.wickets += isWicket ? 1 : 0;
     }

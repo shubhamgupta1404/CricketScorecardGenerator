@@ -1,6 +1,6 @@
 package Models;
 
-public abstract class Player {
+public class Player {
     private final String name;
 
     public Player(String name) {
@@ -11,5 +11,4 @@ public abstract class Player {
         return name;
     }
 
-    public abstract void ballFaced(int runs, boolean isLegalDelivery, boolean isWicket);
 }

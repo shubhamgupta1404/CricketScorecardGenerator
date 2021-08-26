@@ -84,46 +84,70 @@ public class GameEngine {
 
         ArrayList<Integer> onCreasePlayers = new ArrayList<>();
         onCreasePlayers.add(++counter);
+        game.getCurrentTeam().setIsPlaying(counter);
         onCreasePlayers.add(++counter);
+        game.getCurrentTeam().setIsPlaying(counter);
 
         int onStrikePlayer = 0;
         for (int over = 1; over <= game.getOversCount(); over++) {
             int balls = 0;
             System.out.println("Over " + over + ":");
             while (balls < MAX_BALLS_IN_OVER && !game.getCurrentTeam().isInningsOver()) {
-                String ballResult = sc.next();
-                TypeOfBalls typeOfBall = TypeOfBalls.valueOf(ballResult);
-                int runs;
+                String ballResult = sc.nextLine();
+//                System.out.println("DEBUG: " + TypeOfBalls.values()[0]);
+//                TypeOfBalls typeOfBall = TypeOfBalls.values(ballResult);
+//                System.out.println("DEBUG: " + typeOfBall);
+
+                int runs = 0;
                 int extra = 0;
                 boolean isLegalDelivery = true;
+                boolean isBoundary = false;
                 boolean isWicket = false;
                 boolean switchSide = false;
+                String options[] = ballResult.split("\s+");
+//                System.out.println("Debug: " + options[0]);
+
                 try {
-                    switch (typeOfBall) {
-                        case DOT_BALL -> runs = 0;
-                        case ONE -> {
+                    switch (options[0]) {
+                        case "0" -> runs = 0;
+                        case "1" -> {
                             runs = 1;
                             switchSide = true;
                         }
-                        case TWO -> runs = 2;
-                        case THREE -> {
+                        case "2" -> runs = 2;
+                        case "3" -> {
                             runs = 3;
                             switchSide = true;
                         }
-                        case FOUR -> runs = 4;
-                        case SIX -> runs = 6;
-                        case WICKET -> {
+                        case "4*" -> {
+                            runs = 4;
+                            isBoundary = true;
+                        }
+                        case "4" -> runs = 4;
+                        case "5" -> {
+                            runs = 5;
+                            isBoundary = true;
+                        }
+                        case "6*" -> {
+                            runs = 6;
+                            isBoundary = true;
+                        }
+                        case "W" -> {
                             runs = 0;
                             isWicket = true;
                         }
-                        case WIDEBALL -> {
-                            runs = 0;
-                            extra = 1;
+                        case "Wd" -> {
+                            extra += 1;
+                            if (options.length > 1) {
+                                extra += Integer.parseInt(options[1]);
+                            }
                             isLegalDelivery = false;
                         }
-                        case NO_BALL -> {
-                            runs = 0;
-                            extra = 1;
+                        case "Nb" -> {
+                            if (options.length > 1) {
+                                runs = Integer.parseInt(options[1]);
+                            }
+                            extra += 1;
                         }
                         default -> throw new Exception("Invalid result of ball.");
                     }
@@ -131,9 +155,10 @@ public class GameEngine {
                     System.out.println(e.getMessage() + " Try again!!");
                     continue;
                 }
-                game.getCurrentTeam().ballFaced(onCreasePlayers.get(onStrikePlayer), runs, extra, isLegalDelivery, isWicket);
+                game.getCurrentTeam().ballFaced(onCreasePlayers.get(onStrikePlayer), runs, extra, isBoundary, isLegalDelivery, isWicket);
                 if (isWicket && !game.getCurrentTeam().isInningsOver()) {
                     onCreasePlayers.set(onStrikePlayer, ++counter);
+                    game.getCurrentTeam().setIsPlaying(counter);
                 }
                 if (isLegalDelivery) balls++;
                 if (switchSide) {
@@ -142,6 +167,10 @@ public class GameEngine {
             }
             displayOverSummary(innings, game, over, balls);
             onStrikePlayer = onStrikePlayer == 1 ? 0 : 1;
+
+            if (game.getCurrentTeam().isInningsOver()) {
+                break;
+            }
         }
     }
 

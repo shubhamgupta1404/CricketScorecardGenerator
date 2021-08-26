@@ -22,12 +22,12 @@ public class Batsman extends Player {
         isPlaying = playing;
     }
 
-    public void ballFaced(int runScored, boolean isLegalDelivery, boolean isWicket) {
+    public void ballFaced(int runScored, boolean isBoundary, boolean isLegalDelivery, boolean isWicket) {
         score += runScored;
-        if (runScored == 4) {
+        if (runScored == 4 && isBoundary) {
             fours += 1;
         }
-        if (runScored == 6) {
+        if (runScored == 6 && isBoundary) {
             sixes += 1;
         }
         balls += isLegalDelivery ? 1 : 0;
